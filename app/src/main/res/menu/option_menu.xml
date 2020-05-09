@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="log out"
+        app:showAsAction="never"
+        android:id="@+id/log_out"/>
+
+    <item
+        android:title="add group"
+        app:showAsAction="never"
+        android:id="@+id/add_group"/>
+
+    <item
+        android:title="update profile"
+        app:showAsAction="never"
+        android:id="@+id/update_profile"/>
+
+    <item
+        android:title="request_user"
+        app:showAsAction="never"
+        android:id="@+id/request_user"/>
+
+    <item
+        android:title="find friends"
+        app:showAsAction="never"
+        android:id="@+id/find_friends"/>
+</menu>
