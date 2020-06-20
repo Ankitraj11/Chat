@@ -8,6 +8,10 @@
         android:id="@+id/log_out"/>
 
     <item
+        android:title="My Account"
+        app:showAsAction="never"
+        android:id="@+id/my_account"/>
+    <item
         android:title="add group"
         app:showAsAction="never"
         android:id="@+id/add_group"/>

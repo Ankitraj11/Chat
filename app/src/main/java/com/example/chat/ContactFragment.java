@@ -106,6 +106,7 @@ public class ContactFragment extends Fragment {
 
                                                     String name = dataSnapshot.child("name").getValue().toString();
                                                     holder.name.setText(name);
+                                                    Picasso.with(getActivity()).load(R.drawable.ic_launcher_background).into(holder.image);
 
                                                 }
 

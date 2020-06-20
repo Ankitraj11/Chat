@@ -105,7 +105,7 @@ FirebaseRecyclerAdapter<RequestedUserModel, RequestViewHolder> adapter;
                                }
                                else if(state.equals("offline"))
                                {
-                                   holder.state.setText("last seen" +date+""+time);
+                                   holder.state.setText("last seen  " +date+"  "+time);
                                }
 
                                   }
@@ -122,6 +122,7 @@ FirebaseRecyclerAdapter<RequestedUserModel, RequestViewHolder> adapter;
                        }
                          name[0] = (String) dataSnapshot.child("name").getValue();
                          holder.name.setText(name[0]);
+                         Picasso.with(getActivity()).load(R.drawable.ic_launcher_background).into(holder.image);
                      }
                     }
 

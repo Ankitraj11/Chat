@@ -13,11 +13,22 @@ public class Userdata {
       //  this.image=image;
    // }
 
-    public Userdata(String name, String status,String userId) {
+
+    public Userdata() {
+    }
+
+    public Userdata(String name, String status, String userId, String image) {
         this.name = name;
         this.status = status;
         this.userId=userId;
+        this.image=image;
 
+    }
+
+    public Userdata(String name, String status, String userId) {
+        this.name = name;
+        this.status = status;
+        this.userId = userId;
     }
 
     public String getUserId() {

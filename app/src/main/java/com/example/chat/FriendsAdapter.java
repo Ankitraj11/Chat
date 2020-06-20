@@ -78,8 +78,13 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.ViewHold
         }
         private void setData(String names,String images)
         {
-            name.setText(names);
+           if(images!=null)
+           {name.setText(names);
             Picasso.with(itemView.getContext()).load(images).into(image);
         }
+           else {
+               Picasso.with(itemView.getContext()).load(R.drawable.ic_launcher_background).into(image);
+               name.setText(names);
+           }
     }
-}
+}}

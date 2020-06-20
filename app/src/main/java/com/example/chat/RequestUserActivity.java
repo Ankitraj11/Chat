@@ -192,7 +192,7 @@ public class RequestUserActivity extends AppCompatActivity {
                                                String name=dataSnapshot.child("name").getValue().toString();
                                            String status=dataSnapshot.child("status").getValue().toString();
                                            holder.userName.setText(name);
-
+                                             Picasso.with(RequestUserActivity.this).load(R.drawable.ic_launcher_background).into(holder.profileImage);
                                            }
                                    }
 

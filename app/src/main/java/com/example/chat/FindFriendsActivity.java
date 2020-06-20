@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +46,7 @@ public class FindFriendsActivity extends AppCompatActivity {
     private DatabaseReference ref;
     private RecyclerView recyclerView;
     private FriendsModel friendsModel;
+    private FirebaseUser user;
 
 
     @Override
@@ -113,8 +115,8 @@ public class FindFriendsActivity extends AppCompatActivity {
 
 
         db = FirebaseDatabase.getInstance();
-       ref=db.getReference();
-             auth=FirebaseAuth.getInstance();
+        ref = db.getReference();
+        auth = FirebaseAuth.getInstance();
         recyclerView = findViewById(R.id.User_recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(FindFriendsActivity.this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -122,45 +124,52 @@ public class FindFriendsActivity extends AppCompatActivity {
         friendsModelList = new ArrayList<>();
         friendsAdapter = new FriendsAdapter(friendsModelList);
         recyclerView.setAdapter(friendsAdapter);
+        user = auth.getCurrentUser();
 
 
-
-
-        ref.child("Users").addValueEventListener(new ValueEventListener() {
+        ref.child("Users").addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-               // Iterator iterator=dataSnapshot.getChildren().iterator();
-              //  while (iterator.hasNext())
-            //    {
-              //      String image=(String)((DataSnapshot)iterator.next()).getValue();
-                //    String name=(String)((DataSnapshot)iterator.next()).getValue();
-                  //  String status=(String)((DataSnapshot)iterator.next()).getValue();
-      //              String userid=(String)((DataSnapshot)iterator.next()).getValue();
-        //            FriendsModel friendsModel=new FriendsModel(name,image,status,userid);
-          //          friendsModelList.add(friendsModel);
-            //    }
-        //        friendsAdapter.notifyDataSetChanged();
-                    friendsModelList.clear();
-                          for(DataSnapshot data:dataSnapshot.getChildren()) {
-                              if (dataSnapshot.exists() && dataSnapshot.hasChild("image")) {
-                                  String name = data.child("name").getValue(String.class);
-                                  String image = data.child("image").getValue(String.class);
-                                  String status = data.child("status").getValue(String.class);
-                                  String userid = data.child("userId").getValue(String.class);
-                                   friendsModel = new FriendsModel(name, image, status, userid);
+                if (dataSnapshot.exists() && dataSnapshot.hasChild("name")
+                && dataSnapshot.hasChild("image") && dataSnapshot.hasChild("status")) {
+                //   FriendsModel friendsModel=dataSnapshot.getValue(FriendsModel.class);
+                    String name=dataSnapshot.child("name").getValue().toString();
+                    String image=dataSnapshot.child("image").getValue().toString();
+                    String userid=dataSnapshot.child("userId").getValue().toString();
+                    String status=dataSnapshot.child("status").getValue().toString();
+                    friendsModel = new FriendsModel(name, image, status, userid);
+                    friendsModelList.add(friendsModel);
+                }
+                else if (dataSnapshot.exists() && dataSnapshot.hasChild("name")
+                        && dataSnapshot.hasChild("status"))
+                {
+                    String name=dataSnapshot.child("name").getValue().toString();
+                    String userid=dataSnapshot.child("userId").getValue().toString();
+                    String status=dataSnapshot.child("status").getValue().toString();
+                    friendsModel=new FriendsModel(name,status,userid);
+                    friendsModelList.add(friendsModel);
+                }
+                else {
 
-                              } else if (dataSnapshot.exists()) {
+                }
+                friendsAdapter.notifyDataSetChanged();
+            }
 
-                                  String name = data.child("name").getValue(String.class);
-                                  String status = data.child("status").getValue(String.class);
-                                  String userid = data.child("userId").getValue(String.class);
-                                  friendsModel=new FriendsModel(name,status,userid);
-                              } else { }
 
-                              friendsModelList.add(friendsModel);
-                          }
-                          friendsAdapter.notifyDataSetChanged();
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override
@@ -168,8 +177,5 @@ public class FindFriendsActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
-}
-
+    }

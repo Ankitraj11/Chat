@@ -7,70 +7,76 @@
     android:orientation="vertical"
     tools:context=".UpdateProfile">
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardElevation="10dp"
-        app:cardCornerRadius="10dp"
-
-        android:layout_margin="10dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-   <de.hdodenhof.circleimageview.CircleImageView
-       android:layout_width="200dp"
-       android:layout_height="200dp"
-       android:layout_marginTop="30dp"
-       android:layout_gravity="center_horizontal"
-       android:id="@+id/image"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:text="Add Image"
-        android:id="@+id/add_image_btn"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-
-        android:id="@+id/user_name"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:textStyle="bold"
-        android:id="@+id/user_status"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="update profile"
-        android:textStyle="bold"
         android:layout_margin="20dp"
-        android:id="@+id/update_profile"/>
+        android:orientation="vertical">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/image"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:text="Add Image"
+            android:id="@+id/add_image_btn"/>
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="Note:   you have to upload your image while updating your name for the first time otherwise app may not functions well "
-          android:textSize="15dp"
-          android:layout_gravity="center_horizontal"
-          android:textAlignment="center"
-          android:layout_margin="20dp"
-          android:textStyle="bold"
-          android:textColor="#CA1A1A"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+
+            android:id="@+id/user_name"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textStyle="bold"
+            android:id="@+id/user_status"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="complete profile"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:id="@+id/complete_profile"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update profile"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:id="@+id/update_profile"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note:   you have to upload your image while updating your name for the first time otherwise app may not functions well "
+            android:textSize="15dp"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:layout_margin="20dp"
+            android:textStyle="bold"
+            android:textColor="#CA1A1A"/>
 
 
-        </LinearLayout>
-</androidx.cardview.widget.CardView>
+    </LinearLayout>
 </LinearLayout>

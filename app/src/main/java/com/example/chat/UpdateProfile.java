@@ -9,38 +9,31 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Objects;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UpdateProfile extends AppCompatActivity {
     private static final int GALLERY_PICK = 1;
@@ -51,15 +44,18 @@ public class UpdateProfile extends AppCompatActivity {
     private DatabaseReference ref;
     private FirebaseAuth auth;
     private FirebaseUser user;
+    Uri profileImage;
     private FirebaseStorage storage;
     private StorageReference sref;
     private FirebaseUser currentUser;
     String ftechprofileImage;
     private Button updateProfile;
+    private Button completeprofile;
+    String fetchFromGalleryImage;
     private Button addProfileImageBtn;
     private String currentUserId;
     private Button gotoHOmebtn;
-
+    String profileImageurl;
 
     @Override
     protected void onPause() {
@@ -101,16 +97,16 @@ public class UpdateProfile extends AppCompatActivity {
         userName = findViewById(R.id.user_name);
         userStatus = findViewById(R.id.user_status);
         image = findViewById(R.id.image);
-        updateProfile = findViewById(R.id.update_profile);
+        completeprofile = findViewById(R.id.complete_profile);
+        updateProfile=findViewById(R.id.update_profile);
         db = FirebaseDatabase.getInstance();
         ref = db.getReference();
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        currentUserId = currentUser.getUid();
+
         userStatus = findViewById(R.id.user_status);
 
         LoadProfileinfo();
-
 
 
         addProfileImageBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,96 +120,245 @@ public class UpdateProfile extends AppCompatActivity {
             }
         });
 
+           updateProfile.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+                   final String name = userName.getText().toString();
+                   final String status = userStatus.getText().toString();
+               updateprofile(name,status);
 
 
+               }
+           });
 
-        updateProfile.setOnClickListener(new View.OnClickListener() {
+        completeprofile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                String name = userName.getText().toString();
-                String status = userStatus.getText().toString();
+                final String name = userName.getText().toString();
+                final String status = userStatus.getText().toString();
 
-                if(name.isEmpty()|| status.isEmpty())
-                {
-                    if(name.isEmpty())
-                    {
+                if (name.isEmpty() || status.isEmpty() ||TextUtils.isEmpty(fetchFromGalleryImage)) {
+                    if (name.isEmpty()) {
                         userName.requestFocus();
 
                     }
-                    if( status.isEmpty())
-                    {
+                    if (status.isEmpty()) {
                         userStatus.requestFocus();
                     }
-                }
-                else {
-                    Userdata userdata = new Userdata(name, status, auth.getCurrentUser().getUid());
-                    ref.child("Users").child(auth.getCurrentUser().getUid()).setValue(userdata)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
+                    if(TextUtils.isEmpty(fetchFromGalleryImage))
+                    {
+                        Toast.makeText(UpdateProfile.this,"You must choose an image",Toast.LENGTH_SHORT).show();
 
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
-                                    builder.setMessage("Profile updated");
-                                    builder.setCancelable(false);
-                                    builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            Intent intent = new Intent(UpdateProfile.this, MainActivity.class);
-                                            finish();
-                                            startActivity(intent);
+                    }
+
+                } else {
+
+                    sref.child(currentUser.getUid() + ".jpg").putFile(profileImage)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    if (taskSnapshot.getMetadata() != null) {
+                                        if (taskSnapshot.getMetadata().getReference() != null) {
+                                            Task<Uri> result = taskSnapshot.getMetadata()
+                                                    .getReference().getDownloadUrl();
+                                            result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri) {
+                                                     profileImageurl = uri.toString();
+
+
+
+                                                    Userdata userdata = new Userdata(name, status, currentUser.getUid(), profileImageurl);
+                                                    ref.child("Users").child(currentUser.getUid()).setValue(userdata)
+                                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+
+                                                                    AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
+                                                                    builder.setMessage("Profile updated");
+                                                                    builder.setCancelable(false);
+                                                                    builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                                            Intent intent = new Intent(UpdateProfile.this, MainActivity.class);
+                                                                            finish();
+                                                                            startActivity(intent);
+                                                                        }
+                                                                    });
+                                                                    builder.show();
+                                                                }
+                                                            }).addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
+                                                            builder.setMessage(e.getMessage());
+                                                            builder.setCancelable(false);
+                                                            builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                                }
+                                                            });
+                                                            builder.show();
+                                                        }
+                                                    });
+                                                }
+                                            });
+
                                         }
-                                    });
-                                    builder.show();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
-                            builder.setMessage(e.getMessage());
-                            builder.setCancelable(false);
-                            builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-
+                                    }
                                 }
                             });
-                            builder.show();
-                        }
-                    });
+
+
                 }
             }
         });
+    }
+
+       private void updateprofile(final String name,final String status ) {
+          if(!TextUtils.isEmpty(fetchFromGalleryImage)) {
+              sref.child(currentUser.getUid() + ".jpg").putFile(profileImage)
+                      .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                          @Override
+                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                              if (taskSnapshot.getMetadata() != null) {
+                                  if (taskSnapshot.getMetadata().getReference() != null) {
+                                      Task<Uri> result = taskSnapshot.getMetadata()
+                                              .getReference().getDownloadUrl();
+                                      result.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                          @Override
+                                          public void onSuccess(Uri uri) {
+                                              profileImageurl = uri.toString();
+
+                                              HashMap<String, Object> map = new HashMap<>();
+                                              map.put("image", profileImageurl);
+                                              map.put("name", name);
+                                              map.put("status", status);
+
+                                              // Userdata userdata = new Userdata(name, status, currentUser.getUid(), profileImageurl);
+                                              ref.child("Users").child(currentUser.getUid()).updateChildren(map)
+                                                      .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                          @Override
+                                                          public void onSuccess(Void aVoid) {
+
+                                                              AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
+                                                              builder.setMessage("Profile updated");
+                                                              builder.setCancelable(false);
+                                                              builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                                                  @Override
+                                                                  public void onClick(DialogInterface dialogInterface, int i) {
+                                                                      Intent intent = new Intent(UpdateProfile.this, MainActivity.class);
+                                                                      finish();
+                                                                      startActivity(intent);
+                                                                  }
+                                                              });
+                                                              builder.show();
+                                                          }
+                                                      }).addOnFailureListener(new OnFailureListener() {
+                                                  @Override
+                                                  public void onFailure(@NonNull Exception e) {
+                                                      AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
+                                                      builder.setMessage(e.getMessage());
+                                                      builder.setCancelable(false);
+                                                      builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                                          @Override
+                                                          public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                          }
+                                                      });
+                                                      builder.show();
+                                                  }
+                                              });
+                                          }
+                                      });
+
+                                  }
+                              }
+                          }
+                      });
+          }
+          else {
+               HashMap<String, Object> map=new HashMap<String, Object>();
+              map.put("name", name);
+              map.put("status", status);
+
+              // Userdata userdata = new Userdata(name, status, currentUser.getUid(), profileImageurl);
+              ref.child("Users").child(currentUser.getUid()).updateChildren(map)
+                      .addOnSuccessListener(new OnSuccessListener<Void>() {
+                          @Override
+                          public void onSuccess(Void aVoid) {
+
+                              AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
+                              builder.setMessage("Profile updated");
+                              builder.setCancelable(false);
+                              builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                                  @Override
+                                  public void onClick(DialogInterface dialogInterface, int i) {
+                                      Intent intent = new Intent(UpdateProfile.this, MainActivity.class);
+                                      finish();
+                                      startActivity(intent);
+                                  }
+                              });
+                              builder.show();
+                          }
+                      }).addOnFailureListener(new OnFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception e) {
+                      AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProfile.this);
+                      builder.setMessage(e.getMessage());
+                      builder.setCancelable(false);
+                      builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialogInterface, int i) {
+
+                          }
+                      });
+                      builder.show();
+                  }
+              });
+          }
+
 
     }
 
-    private void LoadProfileinfo() {
+       private void LoadProfileinfo() {
 
-        ref.child("Users").child(auth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        ref.child("Users").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("image"))
                         && (dataSnapshot.hasChild("name")) && (dataSnapshot.hasChild("status"))) {
 
-
-                    String name = dataSnapshot.child("name").getValue().toString();
-                    String status = dataSnapshot.child("status").getValue().toString();
-                    ftechprofileImage = dataSnapshot.child("image").getValue().toString();
+                        completeprofile.setVisibility(View.INVISIBLE);
+                        completeprofile.setEnabled(false);
+                        Userdata userdata=dataSnapshot.getValue(Userdata.class);
+                        String name =userdata.getName();
+                        String status = userdata.getStatus();
+                        ftechprofileImage = userdata.getImage();
 
                     userName.setText(name);
                     userStatus.setText(status);
                     Picasso.with(UpdateProfile.this).load(ftechprofileImage).into(image);
 
-                } else if ((dataSnapshot.hasChild("name")) && (dataSnapshot.hasChild("status"))) {
+                } else if (dataSnapshot.exists() &&dataSnapshot.hasChild("name") && (dataSnapshot.hasChild("status"))) {
 
                     String name = dataSnapshot.child("name").getValue().toString();
                     String status = dataSnapshot.child("status").getValue().toString();
                     userName.setText(name);
                     userStatus.setText(status);
-
-
+                    Picasso.with(UpdateProfile.this).load(R.drawable.ic_launcher_background).into(image);
                 }
-            }
+                     else{
+
+                         updateProfile.setEnabled(false);
+                         updateProfile.setVisibility(View.INVISIBLE);
+
+                    }
+                }
+
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -230,56 +375,13 @@ public class UpdateProfile extends AppCompatActivity {
 
         if ((requestCode == GALLERY_PICK) && (resultCode == RESULT_OK) && data != null && data.getData() != null) {
 
-            Uri profileImage = data.getData();
-            //    CropImage.activity()
-            //          .setGuidelines(CropImageView.Guidelines.ON)
-            //         .setAspectRatio(1, 1)
-            //         .start(this);
+             profileImage = data.getData();
+             fetchFromGalleryImage=profileImage.toString();
+            Picasso.with(UpdateProfile.this).load(profileImage).into(image);
 
-            //  if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+        }
 
-            //              CropImage.ActivityResult result = CropImage.getActivityResult(data);
-//
-            //              if (resultCode == RESULT_OK) {
-            //              Uri resultUri = result.getUri();
-            //                  profileImage=resultUri;
-
-
-            sref.child(auth.getCurrentUser().getUid() + ".jpg").putFile(profileImage)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            if (taskSnapshot.getMetadata() != null) {
-                                if (taskSnapshot.getMetadata().getReference() != null) {
-                                    Task<Uri> result = taskSnapshot.getMetadata()
-                                            .getReference().getDownloadUrl();
-                                    result.addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            String profileImageurl = uri.toString();
-
-
-                                            ref.child("Users").child(currentUserId).child("image").setValue(profileImageurl)
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            Toast.makeText(UpdateProfile.this, "image saved to real time", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(UpdateProfile.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        }
-
-
-                                    });
                                 }
-                            }
-                        }
-                    });
-        }}
 
 
     private void updateuserStatus(String state) {
@@ -294,7 +396,7 @@ public class UpdateProfile extends AppCompatActivity {
         currentTime=simpleTimeformat.format(calendar.getTime());
 
 
-        HashMap<String, Object> map=new HashMap();
+        HashMap<String, Object> map=new HashMap<>();
         map.put("time",currentTime);
         map.put("date",currentDate);
         map.put("state",state);

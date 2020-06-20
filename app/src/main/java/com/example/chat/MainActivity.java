@@ -6,10 +6,13 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,13 +42,16 @@ public class MainActivity extends AppCompatActivity implements AddGroupDialog.Di
     private FrameLayout frameLayout;
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
-
+   TextView imageuploadinfo;
+    TextView nameuploadinfo;
+    TextView statuseuploadinfo;
 
 
     @Override
     protected void onStart() {
         super.onStart();
-    if(auth.getCurrentUser()!=null)
+        user=auth.getCurrentUser();
+    if(user!=null)
         {
 
             updateUserStatus("online");
@@ -54,17 +60,42 @@ public class MainActivity extends AppCompatActivity implements AddGroupDialog.Di
             ref.child("Users").child(currentUserId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if((dataSnapshot.exists()) && (dataSnapshot.hasChild("name"))) {
+                    if((dataSnapshot.exists()) && (dataSnapshot.hasChild("name")
+                    && dataSnapshot.hasChild("image") && dataSnapshot.hasChild("status"))) {
 
+
+                           nameuploadinfo.setBackgroundColor(Color.BLUE);
+                        imageuploadinfo.setBackgroundColor(Color.BLUE);
+                        statuseuploadinfo.setBackgroundColor(Color.BLUE);
+                        nameuploadinfo.setText("name  is successfully uploded");
+                        imageuploadinfo.setText("image is successfully uploaded");
+                        statuseuploadinfo.setText("status is successfully uploaded");
+
+                    }
+                    else if(dataSnapshot.exists() && dataSnapshot.hasChild("name") && dataSnapshot.hasChild("image"))
+                    {
+
+                        nameuploadinfo.setBackgroundColor(Color.BLUE);
+                        imageuploadinfo.setBackgroundColor(Color.BLUE);
+                        nameuploadinfo.setText("name  is successfully uploded");
+                        imageuploadinfo.setText("image is successfully uploaded");
+
+
+                    }
+                    else if(dataSnapshot.exists() && dataSnapshot.hasChild("name"))
+                    {
+                        nameuploadinfo.setBackgroundColor(Color.BLUE);
+                        nameuploadinfo.setText("name  is successfully uploded");
 
 
                     }
 
                     else {
 
-                        Intent intent=new Intent(MainActivity.this,UpdateProfile.class);
-                        finish();
-                        startActivity(intent);
+                        nameuploadinfo.setText("Please upload your name  before sending and receiving friend request");
+                        imageuploadinfo.setText("Please upload your image  before sending and receiving friend request");
+                        statuseuploadinfo.setText("Please upload your status  before sending and receiving friend request");
+
                     }
 
                 }
@@ -77,10 +108,11 @@ public class MainActivity extends AppCompatActivity implements AddGroupDialog.Di
 
         }
         else{
-            Intent intent=new Intent(MainActivity.this,LoginActivity.class);
-            finish();
-            startActivity(intent);
-
+            if(user==null) {
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                finish();
+                startActivity(intent);
+            }
         }
 
 
@@ -101,6 +133,10 @@ public class MainActivity extends AppCompatActivity implements AddGroupDialog.Di
 
             updateUserStatus("offline");
 
+
+
+
+
         }
 
     }
@@ -119,7 +155,9 @@ public class MainActivity extends AppCompatActivity implements AddGroupDialog.Di
         TabLayout.Tab first = tabLayout.newTab();
         first.setText("Chat");
         tabLayout.addTab(first);
-
+        imageuploadinfo=findViewById(R.id.image_upload_information);
+         nameuploadinfo=findViewById(R.id.name_upload_information);
+         statuseuploadinfo=findViewById(R.id.status_upload_information);
         TabLayout.Tab secondTab = tabLayout.newTab();
         secondTab.setText("Group Chat");
         tabLayout.addTab(secondTab);
@@ -186,6 +224,11 @@ public class MainActivity extends AppCompatActivity implements AddGroupDialog.Di
         if (item.getItemId() == R.id.find_friends) {
             Intent findfriendintnet = new Intent(MainActivity.this, FindFriendsActivity.class);
             startActivity(findfriendintnet);
+        }
+        if(item.getItemId()==R.id.my_account)
+        {
+            Intent intent=new Intent(MainActivity.this,MyAccountActivity.class);
+            startActivity(intent);
         }
         if (item.getItemId() == R.id.request_user) {
             Intent requestuserintent = new Intent(MainActivity.this, RequestUserActivity.class);

@@ -97,7 +97,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 String name = dataSnapshot.child("name").getValue().toString();
                 String status = dataSnapshot.child("status").getValue().toString();
-
+               Picasso.with(ProfileActivity.this).load(R.drawable.ic_launcher_background).into(profileImage);
 
                 profileName.setText(name);
                 profilestatus.setText(status);

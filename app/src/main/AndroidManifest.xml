@@ -3,7 +3,6 @@
     package="com.example.chat">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -12,14 +11,28 @@
         android:largeHeap="true"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true">
-
-        <activity android:name=".ChatActivity" android:theme="@style/UpdateActivityTheme"/>
-        <activity android:name=".RequestUserActivity" android:theme="@style/UpdateActivityTheme"/>
-        <activity android:name=".ProfileActivity" android:theme="@style/UpdateActivityTheme"/>
-        <activity android:name=".FindFriendsActivity" android:theme="@style/UpdateActivityTheme" />
-        <activity android:name=".GroupChatActivity"  android:theme="@style/UpdateActivityTheme"/>
-        <activity android:name=".UpdateProfile" android:theme="@style/UpdateActivityTheme"/>
-        <activity android:name=".MainActivity"
+        <activity android:name=".MyAccountActivity"
+            android:theme="@style/UpdateActivityTheme"/>
+        <activity
+            android:name=".ChatActivity"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".RequestUserActivity"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".FindFriendsActivity"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".GroupChatActivity"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".UpdateProfile"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,8 +43,12 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".LoginActivity"  android:theme="@style/UpdateActivityTheme"/>
-        <activity android:name=".RegisterActivity"  android:theme="@style/UpdateActivityTheme"/>
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/UpdateActivityTheme" />
+        <activity
+            android:name=".RegisterActivity"
+            android:theme="@style/UpdateActivityTheme" />
     </application>
 
 </manifest>

@@ -108,7 +108,11 @@ private RecyclerView recyclerView;
        sendMsgbtn=findViewById(R.id.send_user_msg_btn);
        toolbarImage=findViewById(R.id.chat_user_image);
        ref= FirebaseDatabase.getInstance().getReference();
-        Picasso.with(ChatActivity.this).load(image).into(toolbarImage);
+      if(image!=null)
+      {Picasso.with(ChatActivity.this).load(image).into(toolbarImage);}
+      else {
+          Picasso.with(ChatActivity.this).load(R.drawable.ic_launcher_background).into(toolbarImage);
+      }
 
         auth=FirebaseAuth.getInstance();
         user=auth.getCurrentUser();
